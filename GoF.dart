@@ -2,9 +2,8 @@ import 'dart:math';
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-final Color aliveColor = new Color.fromARGB(255, 50, 255, 100);
-final Color deadColor = new Color.fromARGB(255, 240, 240, 240);
-final Color uiColor = Colors.lightBlue;
+final Color cellColor = Colors.lightBlue;
+final Color bgColor = new Color.fromARGB(255, 245, 245, 255);
 final TargetPlatform platform = TargetPlatform.android;
 
 void main() {
@@ -49,16 +48,18 @@ class GOLPainter extends CustomPainter {
       for (var j = y - 1; j <= y + 1; j++) {
         if (cells[(i + xRes) % xRes][(j + yRes) % yRes]) count++;
       }
+    // remove the cell itself if it's alive
     count -= (cells[x][y] ? 1 : 0);
     return count;
   }
 
   @override
   void paint(Canvas canvas, Size size) {
-    update();
+    canvas.drawRect(Offset(0, 0) & Size(cWidth * xRes, cHeight * yRes),
+        Paint()..color = bgColor);
     for (var i = 0; i < xRes; i++)
       for (var j = 0; j < yRes; j++) {
-        drawCell(canvas, i * cWidth, j * cHeight, cells[i][j]);
+        if (cells[i][j]) drawCell(canvas, i * cWidth, j * cHeight, cells[i][j]);
       }
   }
 
@@ -67,13 +68,9 @@ class GOLPainter extends CustomPainter {
     return true;
   }
 
-  // Draw a small circle representing a seed centered at (x,y).
   void drawCell(Canvas canvas, num x, num y, bool cellState) {
-    var paint = Paint()
-      ..strokeWidth = 1
-      ..style = PaintingStyle.fill
-      ..color = (cellState ? aliveColor : deadColor);
-    canvas.drawRect(Offset(x, y) & Size(cWidth, cHeight), paint);
+    canvas.drawRect(
+        Offset(x, y) & Size(cWidth, cHeight), Paint()..color = cellColor);
   }
 }
 
@@ -85,43 +82,39 @@ class GameOfLife extends StatefulWidget {
 }
 
 class _GameOfLifeState extends State<GameOfLife> {
-  static const width = 800.0;
-  static const height = 800.0;
+  static const width = 750.0;
+  static const height = 750.0;
   Timer timer;
+  GOLPainter painter = GOLPainter(width, height);
+
+  @override
+  void initState() {
+    timer = new Timer.periodic(Duration(milliseconds: 100), (Timer t) {
+      setState(() {
+        painter.update();
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    timer = new Timer.periodic(Duration(seconds: 2), (Timer t) => setState((){}));
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData().copyWith(
-        platform: platform,
-        brightness: Brightness.dark,
-        sliderTheme: SliderThemeData.fromPrimaryColors(
-          primaryColor: uiColor,
-          primaryColorLight: uiColor,
-          primaryColorDark: uiColor,
-          valueIndicatorTextStyle: DefaultTextStyle.fallback().style,
-        ),
-      ),
       home: Scaffold(
-        appBar: AppBar(title: Text("THA GAME OF SURVIVAL")),
         body: Container(
           constraints: BoxConstraints.expand(),
-          decoration:
-              BoxDecoration(border: Border.all(color: Colors.transparent)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.transparent)),
                 child: SizedBox(
                   width: width,
                   height: height,
                   child: CustomPaint(
-                    painter: GOLPainter(width, height),
+                    key: ValueKey(timer.tick),
+                    painter: painter,
                   ),
                 ),
               ),
