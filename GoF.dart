@@ -7,10 +7,10 @@ final Color bgColor = new Color.fromARGB(255, 245, 245, 255);
 final TargetPlatform platform = TargetPlatform.android;
 
 List<List<bool>> cells;
-final xRes = 50;
-final yRes = 50;
+final width = 700.0, height = 700.0;
+final xRes = 50, yRes = 50;
 double cWidth, cHeight;
-bool paused = false;
+bool paused = false, fillMode = true;
 
 void main() {
   runApp(GameOfLife());
@@ -83,12 +83,9 @@ class GameOfLife extends StatefulWidget {
 }
 
 class _GameOfLifeState extends State<GameOfLife> {
-  static const width = 700.0;
-  static const height = 700.0;
   IconData icon = Icons.pause;
   Timer timer;
   GOLPainter painter = GOLPainter(width, height);
-  bool fillMode;
 
   @override
   void initState() {
@@ -101,7 +98,8 @@ class _GameOfLifeState extends State<GameOfLife> {
   }
 
   void _pointerClick(PointerEvent e) {
-    fillMode = !cells[e.localPosition.dx ~/ cWidth][e.localPosition.dy ~/ cHeight];
+    fillMode =
+        !cells[e.localPosition.dx ~/ cWidth][e.localPosition.dy ~/ cHeight];
     _pointerDraw(e);
   }
 
