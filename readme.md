@@ -2,7 +2,7 @@
 
 Simple implementation of conway's game of life.
 
-![alt text](./screenshot.jpg "Screenshot")
+<img src="/SlaxXxX/ConwaysGameOfFlutter/raw/master/screenshot.jpg" style="max-width:50%;" />
 
 Play with it on Dartpad: https://dartpad.dartlang.org/d651454148dd0e305999961c05cde575
 
