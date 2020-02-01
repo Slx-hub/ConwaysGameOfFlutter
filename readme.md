@@ -1,6 +1,6 @@
 # Conway's Game of Flutter
 
-Simple implementation of conway's game of life.
+Simple implementation of conway's game of life ( https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life )
 
 <img src="screenshot.jpg" style="max-width:50%;" />
 
